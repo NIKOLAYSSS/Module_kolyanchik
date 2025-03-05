@@ -10,12 +10,14 @@ namespace Module_1.Repositories
     public interface IPartnerRepository
     {
         List<Partner> GetAllPartners();
+        List<Product> GetAllProducts();
         Partner GetPartnerById(int partnerId);
         void UpdatePartner(Partner partner);
         void AddPartner(Partner partner);
         void DeletePartner(int partnerId);
         List<PartnerType> GetPartnerTypes();
         decimal GetTotalSalesQuantity(int partnerId);
-        List<SalesHistory> GetSalesHistory(int? partnerId = null);
+        List<SalesHistory> GetSalesHistory(int? partnerId = null, int? productId = null);
+
     }
 }

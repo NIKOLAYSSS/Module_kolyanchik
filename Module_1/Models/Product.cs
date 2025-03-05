@@ -10,6 +10,7 @@ namespace Module_1.Models
     {
         public int ProductID { get; set; }
         public int ProductTypeID { get; set; }
+        public ProductType ProductType { get; set; }
         public string ProductName { get; set; }
         public string Article { get; set; }
         public decimal MinimalPrice { get; set; }

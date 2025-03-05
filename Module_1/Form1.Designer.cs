@@ -39,6 +39,8 @@ namespace Module_1
             this.Reload.Click += new System.EventHandler(this.Reload_Click);
             this.button1 = new System.Windows.Forms.Button();
             this.button1.Click += new System.EventHandler(this.button1_Click);
+            this.buttonSaleHistory = new System.Windows.Forms.Button();
+            this.buttonSaleHistory.Click += new System.EventHandler(this.buttonSaleHistory_Click);
             this.buttonAddProduct = new System.Windows.Forms.Button();
             this.buttonAddProduct.Click += new System.EventHandler(this.buttonAddProduct_Click);
             this.lblTitle = new System.Windows.Forms.Label();
@@ -89,6 +91,7 @@ namespace Module_1
         private System.Windows.Forms.Button button1;
         private System.Windows.Forms.Button buttonAddProduct;
         private System.Windows.Forms.Label lblTitle;
+        private System.Windows.Forms.Button buttonSaleHistory;
         #endregion
     } 
 }

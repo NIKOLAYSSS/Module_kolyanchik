@@ -79,13 +79,14 @@ namespace Module_1
 
             // Стилизация кнопок
             StyleButton(Reload, "🔄 Обновить");
-            StyleButton(button1, "➕ партнера");
-            StyleButton(buttonAddProduct, "➕ продукт");
-
+            StyleButton(button1, "➕ партнер");
+            StyleButton(buttonAddProduct, "➕ продукция");
+            StyleButton(buttonSaleHistory, "💰 Продажи");
             // Добавляем кнопки в обратном порядке из-за FlowDirection
             buttonPanel.Controls.Add(Reload);
             buttonPanel.Controls.Add(button1);
             buttonPanel.Controls.Add(buttonAddProduct);
+            buttonPanel.Controls.Add(buttonSaleHistory);
 
             // Добавляем элементы в навигационную панель
             navPanel.Controls.Add(lblTitle);
@@ -145,10 +146,15 @@ namespace Module_1
         private void buttonAddProduct_Click(object sender, EventArgs e)
         {
 
-            var AddSaleForm = new SalesHistoryForm(partnerRepository);
-            //var AddSaleForm = new AddSaleForm();
+            //var AddSaleForm = new SalesHistoryForm(partnerRepository);
+            var AddSaleForm = new AddSaleForm();
             //var editForm = new AddPartnerForm(partnerRepository);
             AddSaleForm.ShowDialog();
+        }
+        private void buttonSaleHistory_Click(object sender, EventArgs e)
+        {
+            var SalesHistoryForm = new SalesHistoryForm(partnerRepository);
+            SalesHistoryForm.ShowDialog();
         }
     }
 }

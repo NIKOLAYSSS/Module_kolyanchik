@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using Npgsql;
+using NpgsqlTypes;
 
 namespace Module_1.Repositories
 {
@@ -27,6 +28,34 @@ namespace Module_1.Repositories
                 }
             }
             return totalQuantity;
+        }
+
+        public List<Product> GetAllProducts()
+        {
+            var products = new List<Product>();
+            using (var conn = new NpgsqlConnection(_connectionString))
+            {
+                conn.Open();
+                var query = @"SELECT pr.ProductID, pt.TypeName, pr.ProductName, pr.article, pr.MinimalPrice
+                            FROM Products pr
+                            JOIN ProductTypes pt ON pr.ProductTypeID = pt.ProductTypeID";
+                using (var cmd = new NpgsqlCommand(query, conn))
+                using (var reader = cmd.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        products.Add(new Product
+                        {
+                            ProductID = reader.GetInt32(0),
+                            ProductType = new ProductType { TypeName = reader.GetString(1) },
+                            ProductName = reader.GetString(2),
+                            Article = reader.GetString(3),
+                            MinimalPrice = reader.GetDecimal(4)
+                        });
+                    }
+                }
+            }
+            return products;
         }
         // Реализованный метод для получения всех партнеров с типом партнера
         public List<Partner> GetAllPartners()
@@ -106,6 +135,13 @@ namespace Module_1.Repositories
             using (var conn = new NpgsqlConnection(_connectionString))
             {
                 conn.Open();
+                // Удаляем связанные записи из SalesHistory
+                var deleteSalesQuery = "DELETE FROM SalesHistory WHERE PartnerID = @PartnerID";
+                using (var salesCmd = new NpgsqlCommand(deleteSalesQuery, conn))
+                {
+                    salesCmd.Parameters.AddWithValue("@PartnerID", partnerId);
+                    salesCmd.ExecuteNonQuery();
+                }
                 var query = "DELETE FROM Partners WHERE PartnerID = @PartnerID";
                 using (var cmd = new NpgsqlCommand(query, conn))
                 {
@@ -192,7 +228,7 @@ namespace Module_1.Repositories
                 }
             }
         }
-        public List<SalesHistory> GetSalesHistory(int? partnerId = null)
+        public List<SalesHistory> GetSalesHistory(int? partnerId = null, int? productId = null)
         {
             List<SalesHistory> salesList = new List<SalesHistory>();
 
@@ -203,17 +239,18 @@ namespace Module_1.Repositories
             SELECT sh.saleid, sh.partnerid, sh.productid, 
                    sh.quantity, sh.saledate, 
                    p.name AS partnername, 
-                   pr.name AS productname, pr.price
+                   pr.productname AS productname, pr.article
             FROM saleshistory sh
             JOIN partners p ON sh.partnerid = p.partnerid
             JOIN products pr ON sh.productid = pr.productid
             WHERE (@partnerId IS NULL OR sh.partnerid = @partnerId)
+            AND (@productId IS NULL OR sh.productid = @productId)
             ORDER BY sh.saledate DESC";
 
                 using (var cmd = new NpgsqlCommand(query, conn))
                 {
-                    cmd.Parameters.AddWithValue("@partnerId", (object)partnerId ?? DBNull.Value);
-
+                    cmd.Parameters.AddWithValue("@partnerId", NpgsqlDbType.Integer, (object)partnerId ?? DBNull.Value);
+                    cmd.Parameters.AddWithValue("@productId", NpgsqlDbType.Integer, (object)productId ?? DBNull.Value);
                     using (var reader = cmd.ExecuteReader())
                     {
                         while (reader.Read())
@@ -230,7 +267,7 @@ namespace Module_1.Repositories
                             // Читаем дополнительные поля прямо здесь
                             string partnerName = reader.GetString(5);
                             string productName = reader.GetString(6);
-                            decimal price = reader.GetDecimal(7);
+                            string article = reader.GetString(7);
 
                             // Можно передавать их в DataGridView напрямую
                             salesList.Add(sale);
